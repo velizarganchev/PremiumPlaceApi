@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using PremiumPlace_API.Data;
+using PremiumPlace_API.Models;
+using PremiumPlace_API.Models.DTO;
+using PremiumPlace_API.Services.Places;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +14,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => {
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddAutoMapper(o =>
+{
+    o.CreateMap<Place, PlaceCreateDTO>().ReverseMap();
+    o.CreateMap<Place, PlaceUpdateDTO>().ReverseMap();
+});
+builder.Services.AddScoped<IPlaceService, PlaceService>();
 
 var app = builder.Build();
 
