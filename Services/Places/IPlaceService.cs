@@ -5,10 +5,10 @@ namespace PremiumPlace_API.Services.Places
 {
     public interface IPlaceService
     {
-        Task<ServiceResponse<List<PlaceDTO>>> GetAllPlaces();
-        Task<ServiceResponse<PlaceDTO>> GetPlaceById(int id);
-        Task<ServiceResponse<PlaceDTO>> CreatePlace(PlaceCreateDTO placeDTO);
-        Task<ServiceResponse<PlaceDTO>> UpdatePlace(int id, PlaceUpdateDTO placeDTO);
-        Task<ServiceResponse<PlaceDTO>> DeletePlace(int id);
+        Task<ServiceResponse<List<PlaceDTO>>> GetAllPlacesAsync();
+        Task<ServiceResponse<PlaceDTO>> GetPlaceByIdAsync(int id);
+        Task<ServiceResponse<PlaceDTO>> CreatePlaceAsync(PlaceCreateDTO placeDTO);
+        Task<ServiceResponse<PlaceDTO>> UpdatePlaceAsync(int id, PlaceUpdateDTO placeDTO);
+        Task<ServiceResponse<PlaceDTO>> DeletePlaceAsync(int id);
     }
 }

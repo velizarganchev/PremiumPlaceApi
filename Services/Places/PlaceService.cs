@@ -16,7 +16,7 @@ namespace PremiumPlace_API.Services.Places
             _db = db;
             _mapper = mapper;
         }
-        public async Task<ServiceResponse<PlaceDTO>> CreatePlace(PlaceCreateDTO createPlaceDTO)
+        public async Task<ServiceResponse<PlaceDTO>> CreatePlaceAsync(PlaceCreateDTO createPlaceDTO)
         {
             var response = new ServiceResponse<PlaceDTO>();
             var existingPlace = _mapper.Map<PlaceDTO>(await _db.Places.FirstOrDefaultAsync(p => p.Name == createPlaceDTO.Name));
@@ -37,7 +37,7 @@ namespace PremiumPlace_API.Services.Places
             return response;
         }
 
-        public async Task<ServiceResponse<PlaceDTO>> DeletePlace(int id)
+        public async Task<ServiceResponse<PlaceDTO>> DeletePlaceAsync(int id)
         {
             var response = new ServiceResponse<PlaceDTO>();
             if (id <= 0)
@@ -63,7 +63,7 @@ namespace PremiumPlace_API.Services.Places
             return response;
         }
 
-        public async Task<ServiceResponse<List<PlaceDTO>>> GetAllPlaces()
+        public async Task<ServiceResponse<List<PlaceDTO>>> GetAllPlacesAsync()
         {
             var serviceResponse = new ServiceResponse<List<PlaceDTO>>();
             var dbPlaces = await _db.Places
@@ -81,7 +81,7 @@ namespace PremiumPlace_API.Services.Places
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<PlaceDTO>> GetPlaceById(int id)
+        public async Task<ServiceResponse<PlaceDTO>> GetPlaceByIdAsync(int id)
         {
             var serviceResponse = new ServiceResponse<PlaceDTO>();
 
@@ -105,7 +105,7 @@ namespace PremiumPlace_API.Services.Places
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<PlaceDTO>> UpdatePlace(int id,PlaceUpdateDTO placeDTO)
+        public async Task<ServiceResponse<PlaceDTO>> UpdatePlaceAsync(int id,PlaceUpdateDTO placeDTO)
         {
             var response = new ServiceResponse<PlaceDTO>();
             if (id <= 0) {

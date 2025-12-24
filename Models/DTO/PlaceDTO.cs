@@ -2,20 +2,20 @@
 
 namespace PremiumPlace_API.Models.DTO
 {
-    public class PlaceDTO
+    public record class PlaceDTO
     {
-        public int Id { get; set; }
+        public int Id { get; init; }
 
-        public required string Name { get; set; }
+        public required string Name { get; init; } = default!;
 
-        public string? Details { get; set; }
+        public string? Details { get; init; }
 
-        public decimal Rate { get; set; }
+        public decimal Rate { get; init; }
 
-        public int SquareFeet { get; set; }
+        public int SquareFeet { get; init; }
 
-        public int Occupancy { get; set; }
+        public int Occupancy { get; init; }
 
-        public string? ImageUrl { get; set; }
+        public string? ImageUrl { get; init; }
     }
 }
