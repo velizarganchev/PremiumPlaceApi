@@ -11,15 +11,16 @@ namespace PremiumPlace_API.Services.Auth
     public class TokenService : ITokenService
     {
         private readonly JwtOptions _opt;
-        public TokenService(IOptions<JwtOptions> jwtOptions)
+        public TokenService(IOptions<JwtOptions> jwt)
         {
-            _opt = jwtOptions.Value;
+            _opt = jwt.Value;
         }
         public string CreateAccessToken(User user)
         {
             var claims = new List<Claim>
             {
                 new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new(JwtRegisteredClaimNames.Email, user.Email),
                 new(ClaimTypes.Name, user.Username),
                 new(ClaimTypes.Role, user.Role.ToString())

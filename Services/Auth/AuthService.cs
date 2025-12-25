@@ -173,14 +173,15 @@ namespace PremiumPlace_API.Services.Auth
             user.PasswordHash = _passwordService.Hash(user, dto.Password);
 
             var refreshPlain = _tokenService.CreateRefreshToken();
-            var refreshToken = _tokenService.HashToken(refreshPlain);
+            var refreshHash = _tokenService.HashToken(refreshPlain);
 
             user.RefreshTokens.Add(new RefreshToken
             {
-               TokenHash = refreshToken,
-               ExpiresAtUtc = DateTime.UtcNow.AddDays(_jwtOptions.RefreshTokenDays),
-               CreatedByIp = ip,
+                TokenHash = refreshHash,
+                ExpiresAtUtc = DateTime.UtcNow.AddDays(_jwtOptions.RefreshTokenDays),
+                CreatedByIp = ip,
             });
+
 
             await _db.Users.AddAsync(user);
             await _db.SaveChangesAsync();
@@ -194,6 +195,36 @@ namespace PremiumPlace_API.Services.Auth
                 RefreshToken = refreshPlain
             }); 
         }
+
+        public async Task<ServiceResponse<bool>> DeleteMeAsync(int userId, string password, string ip)
+        {
+            var user = await _db.Users
+                .Include(u => u.RefreshTokens)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user is null)
+                return ServiceResponseFactory.Fail<bool>(ServiceErrorType.NotFound, "User not found.");
+
+            // confirm password
+            if (!_passwordService.Verify(user, user.PasswordHash, password))
+                return ServiceResponseFactory.Fail<bool>(ServiceErrorType.Unauthorized, "Invalid password.");
+
+            // revoke/cleanup tokens first (optional)
+            foreach (var rt in user.RefreshTokens.Where(t => t.RevokedAtUtc is null))
+            {
+                rt.RevokedAtUtc = DateTime.UtcNow;
+                rt.RevokedByIp = ip;
+            }
+
+            // hard delete
+            _db.RefreshTokens.RemoveRange(user.RefreshTokens);
+            _db.Users.Remove(user);
+
+            await _db.SaveChangesAsync();
+
+            return ServiceResponseFactory.Ok(true);
+        }
+
         private static void CleanupOldRefreshTokens(User user)
         {
             var threshold = DateTime.UtcNow.AddDays(-10);

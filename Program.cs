@@ -13,7 +13,8 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<ApplicationDbContext>(options => {
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 builder.Services.AddControllers();
@@ -27,8 +28,13 @@ builder.Services.AddAutoMapper(o =>
 });
 
 // JwtOptions от config
-builder.Services.Configure<IOptions<JwtOptions>>(builder.Configuration.GetSection("Jwt"));
+// JwtOptions from config
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 var jwt = builder.Configuration.GetSection("Jwt").Get<JwtOptions>()!;
+
+if (string.IsNullOrWhiteSpace(jwt.SigningKey))
+    throw new InvalidOperationException("Jwt:SigningKey is missing. Check appsettings.Development.json / env / user-secrets.");
+
 
 // Authentication + JWT bearer
 builder.Services
@@ -72,7 +78,7 @@ builder.Services.AddCors(options =>
     {
         policy
             .WithOrigins(
-                "https://localhost:4200", // Angular dev
+                "http://localhost:4200", // Angular dev
                 "https://localhost:5001"  // MVC dev
             )
             .AllowAnyHeader()
