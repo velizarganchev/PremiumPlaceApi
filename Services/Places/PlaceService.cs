@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using PremiumPlace.DTO;
 using PremiumPlace_API.Data;
 using PremiumPlace_API.Models;
-using PremiumPlace_API.Models.DTO;
 
 namespace PremiumPlace_API.Services.Places
 {

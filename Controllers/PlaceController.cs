@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PremiumPlace_API.Controllers.Extensions;
 using PremiumPlace_API.Data;
-using PremiumPlace_API.Models.DTO;
+using PremiumPlace.DTO;
 using PremiumPlace_API.Services.Places;
 
 namespace PremiumPlace_API.Controllers

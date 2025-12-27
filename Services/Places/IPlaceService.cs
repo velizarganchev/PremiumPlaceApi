@@ -1,5 +1,4 @@
-﻿using PremiumPlace_API.Models;
-using PremiumPlace_API.Models.DTO;
+﻿using PremiumPlace.DTO;
 
 namespace PremiumPlace_API.Services.Places
 {

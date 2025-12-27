@@ -1,4 +1,5 @@
-﻿using PremiumPlace_API.Models.DTO.Auth;
+﻿
+using PremiumPlace.DTO.Auth;
 
 namespace PremiumPlace_API.Services.Auth
 

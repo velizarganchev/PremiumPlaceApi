@@ -1,4 +1,9 @@
 <Solution>
+  <Project Path="../premiumplace-angular/premiumplace-angular.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="../PremiumPlace.DTO/PremiumPlace.DTO.csproj" Id="ce675011-def7-4662-9fe0-ffef985455a9" />
   <Project Path="../PremiumPlace_Web/PremiumPlace_Web.csproj" Id="de06120f-d8cb-435a-b788-ee6593b2a86c" />
   <Project Path="PremiumPlace_API.csproj" />
 </Solution>

@@ -1,5 +1,5 @@
-﻿using PremiumPlace_API.Models;
-using PremiumPlace_API.Models.DTO.Auth;
+﻿using PremiumPlace.DTO.Auth;
+using PremiumPlace_API.Models;
 
 namespace PremiumPlace_API.Services.Auth
 {

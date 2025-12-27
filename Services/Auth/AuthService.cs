@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using PremiumPlace.DTO.Auth;
 using PremiumPlace_API.Data;
 using PremiumPlace_API.Models;
-using PremiumPlace_API.Models.DTO.Auth;
 using PremiumPlace_API.Services.Extensions;
 
 namespace PremiumPlace_API.Services.Auth

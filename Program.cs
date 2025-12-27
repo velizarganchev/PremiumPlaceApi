@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using PremiumPlace.DTO;
 using PremiumPlace_API.Data;
 using PremiumPlace_API.Models;
-using PremiumPlace_API.Models.DTO;
 using PremiumPlace_API.Services.Auth;
 using PremiumPlace_API.Services.Places;
 using Scalar.AspNetCore;
@@ -78,8 +77,10 @@ builder.Services.AddCors(options =>
     {
         policy
             .WithOrigins(
-                "http://localhost:4200", // Angular dev
-                "https://localhost:5001"  // MVC dev
+                "http://localhost:55120", // Angular dev
+                "https://localhost:55120", // Angular dev
+                "http://localhost:7073",  // MVC dev
+                "https://localhost:7073"  // MVC dev
             )
             .AllowAnyHeader()
             .AllowAnyMethod()

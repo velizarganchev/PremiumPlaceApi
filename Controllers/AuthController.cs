@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using PremiumPlace.DTO.Auth;
 using PremiumPlace_API.Controllers.Extensions;
 using PremiumPlace_API.Controllers.Helpers;
-using PremiumPlace_API.Models.DTO.Auth;
 using PremiumPlace_API.Services.Auth;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
