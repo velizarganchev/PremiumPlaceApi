@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PremiumPlace.DTO;
 using PremiumPlace_Web.Application.Abstractions.Api;
+using PremiumPlace_Web.Infrastructure.Auth;
 
 namespace PremiumPlace_Web.Controllers
 {
     [Route("Place")]
+    [RequireRole("Admin")]
     public class PlaceController : Controller
     {
         private readonly IPlaceApi _placeApi;
@@ -12,6 +14,8 @@ namespace PremiumPlace_Web.Controllers
         {
             _placeApi = placeApi;
         }
+
+        [HttpGet("Index")]
         public async Task<IActionResult> Index(CancellationToken ct)
         {
             var result = await _placeApi.GetAllAsync(ct);
@@ -48,6 +52,7 @@ namespace PremiumPlace_Web.Controllers
             }
             return RedirectToAction("Index");
         }
+
         [HttpGet("edit/{id}")]
         public async Task<IActionResult> Edit(int id, CancellationToken ct)
         {

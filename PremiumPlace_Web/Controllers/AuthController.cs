@@ -13,6 +13,9 @@ namespace PremiumPlace_Web.Controllers
             _auth = auth;
         }
 
+        [HttpGet("access-denied")]
+        public IActionResult AccessDenied() => View();
+
         [HttpGet("login")]
         public IActionResult Login() => View();
 
