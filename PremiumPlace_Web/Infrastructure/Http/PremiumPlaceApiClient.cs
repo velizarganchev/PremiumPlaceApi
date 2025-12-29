@@ -135,6 +135,17 @@ namespace PremiumPlace_Web.Infrastructure.Http
                 throw new InvalidOperationException("API returned empty JSON body.");
             return data;
         }
-    }
 
+        public Task<HttpResponseMessage> PutJsonAsync<T>(string path, T body, CancellationToken ct = default)
+            => SendAsync(()
+                =>
+            {
+                var req = new HttpRequestMessage(HttpMethod.Put, path)
+                {
+                    Content = JsonContent.Create(body)
+                };
+                AttachAuthCookies(req);
+                return req;
+            }, ct, allowRefreshRetry: true);
+    }
 }
