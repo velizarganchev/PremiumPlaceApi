@@ -23,6 +23,9 @@ builder.Services.AddHttpClient<PremiumPlaceApiClient>(client =>
 });
 
 builder.Services.AddScoped<IAuthApi, AuthApi>();
+builder.Services.AddScoped<IPlaceApi, PlaceApi>();
+builder.Services.AddScoped<PremiumPlace_Web.Infrastructure.Auth.CurrentUserFilter>();
+
 
 var app = builder.Build();
 

@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PremiumPlace.DTO.Auth;
 using PremiumPlace_Web.Application.Abstractions.Api;
-using PremiumPlace_Web.Infrastructure.Http;
-using System.Text.Json;
 
 namespace PremiumPlace_Web.Controllers
 {

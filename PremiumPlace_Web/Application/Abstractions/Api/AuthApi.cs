@@ -17,7 +17,6 @@ namespace PremiumPlace_Web.Application.Abstractions.Api
         {
             var resp = await _client.PostJsonAsync("/api/auth/login", dto, ct);
 
-            // IMPORTANT: login/register/logout трябва да forward-нат Set-Cookie към браузъра
             _client.ForwardSetCookieToBrowser(resp);
 
             if (resp.IsSuccessStatusCode)
@@ -59,7 +58,6 @@ namespace PremiumPlace_Web.Application.Abstractions.Api
 
         public async Task<ApiResult<AuthResponseDTO>> MeAsync(CancellationToken ct = default)
         {
-            // allowRefreshRetry е вътре в клиента (Get/Delete)
             var resp = await _client.GetAsync("/api/auth/me", ct);
 
             if (resp.IsSuccessStatusCode)
