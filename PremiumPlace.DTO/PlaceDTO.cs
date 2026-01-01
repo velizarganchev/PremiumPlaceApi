@@ -1,21 +1,31 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace PremiumPlace.DTO
+﻿namespace PremiumPlace.DTO
 {
-    public record class PlaceDTO
+    public sealed record PlaceDTO
     {
         public int Id { get; init; }
 
-        public required string Name { get; init; } = default!;
+        public string Name { get; init; } = string.Empty;
 
         public string? Details { get; init; }
 
+        public int GuestCapacity { get; init; }
+
         public decimal Rate { get; init; }
+
+        public int Beds { get; init; }
+
+        public int CheckInHour { get; init; }
+
+        public int CheckOutHour { get; init; }
 
         public int SquareFeet { get; init; }
 
-        public int Occupancy { get; init; }
-
         public string? ImageUrl { get; init; }
+
+        public string City { get; init; } = string.Empty;
+
+        public PlaceFeaturesDTO Features { get; init; } = new();
+
+        public List<string> Amenity { get; init; } = new();
     }
 }

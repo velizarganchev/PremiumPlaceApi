@@ -39,7 +39,6 @@ namespace PremiumPlace_API.Controllers
             if (!sr.Success)
                 return this.ToActionResult(sr);
 
-            // ако service връща PlaceDTO с Id -> връщаме Created към GetPlaceById
             var created = sr.Data!;
             return CreatedAtAction(nameof(GetPlaceById), new { id = created.Id }, created);
         }
@@ -47,7 +46,14 @@ namespace PremiumPlace_API.Controllers
         [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdatePlace(int id, [FromBody] PlaceUpdateDTO dto)
         {
-            var sr = await _placeService.UpdatePlaceAsync(id, dto);
+            var sr = await _placeService.UpdatePlaceAsync(id, dto);  
+            return this.ToActionResult(sr);
+        }
+
+        [HttpPatch("{id:int}")]
+        public async Task<IActionResult> UpdatePlacePartial(int id, [FromBody] PlacePatchUpdateDTO dto)
+        {
+            var sr = await _placeService.UpdatePlacePartialAsync(id, dto);
             return this.ToActionResult(sr);
         }
 

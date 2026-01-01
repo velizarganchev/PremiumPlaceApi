@@ -6,33 +6,47 @@ namespace PremiumPlace_API.Models
     {
         public Place()
         {
-            Amenities = new HashSet<Amenitie>();
+            Amenitys = new HashSet<Amenity>();
+            Reviews = new HashSet<Review>();
         }
 
-        [Key]
         public int Id { get; set; }
 
-        [Required]
-        [MaxLength(200)]
-        public required string Name { get; set; }
+        [Required, MaxLength(200)]
+        public string Name { get; set; } = string.Empty;
 
         [MaxLength(1000)]
         public string? Details { get; set; }
 
+        [Range(1, 30)]
+        public int GuestCapacity { get; set; }
+
         [Range(0, 10000)]
         public decimal Rate { get; set; }
 
-        public int SquareFeet { get; set; }
+        [Range(0, 20)]
+        public int Beds { get; set; }
 
-        public int Occupancy { get; set; }
+        [Range(0, 23)]
+        public int CheckInHour { get; set; }
+
+        [Range(0, 23)]
+        public int CheckOutHour { get; set; }
+
+        [Range(10, 10000)]
+        public int SquareFeet { get; set; }
 
         [MaxLength(500)]
         public string? ImageUrl { get; set; }
 
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedAt { get; set; }
 
-        public DateTime? UpdatedDate { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
-        public virtual ICollection<Amenitie> Amenities { get; set; }
+        public PlaceFeatures Features { get; set; } = new();
+        public int CityId { get; set; }
+        public City City { get; set; } = default!;
+        public ICollection<Amenity> Amenitys { get; set; }
+        public ICollection<Review> Reviews { get; set; }
     }
 }

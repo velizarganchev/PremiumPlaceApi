@@ -8,6 +8,7 @@ namespace PremiumPlace_API.Services.Places
         Task<ServiceResponse<PlaceDTO>> GetPlaceByIdAsync(int id);
         Task<ServiceResponse<PlaceDTO>> CreatePlaceAsync(PlaceCreateDTO placeDTO);
         Task<ServiceResponse<PlaceDTO>> UpdatePlaceAsync(int id, PlaceUpdateDTO placeDTO);
+        Task<ServiceResponse<PlaceDTO>> UpdatePlacePartialAsync(int id, PlacePatchUpdateDTO placeDTO);
         Task<ServiceResponse<PlaceDTO>> DeletePlaceAsync(int id);
     }
 }

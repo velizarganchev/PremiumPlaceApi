@@ -5,8 +5,15 @@ namespace PremiumPlace_API.Models
     public enum UserRole { User = 0, Admin = 1 }
     public class User
     {
+        public User()
+        {
+            RefreshTokens = new List<RefreshToken>();
+            Reviews = new HashSet<Review>();
+        }
+
         [Key]
         public int Id { get; set; }
+
         [Required]
         [MaxLength(100)]
         public string Username { get; set; } = string.Empty;
@@ -19,6 +26,7 @@ namespace PremiumPlace_API.Models
         public UserRole Role { get; set; } = UserRole.User;
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public List<RefreshToken> RefreshTokens { get; set; } = new();
+        public List<RefreshToken> RefreshTokens { get; set; }
+        public ICollection<Review> Reviews { get; set; }
     }
 }

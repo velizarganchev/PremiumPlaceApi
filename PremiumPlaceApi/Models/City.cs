@@ -2,19 +2,17 @@
 
 namespace PremiumPlace_API.Models
 {
-    public class Amenitie
+    public class City
     {
-        public Amenitie()
+        public City()
         {
             Places = new HashSet<Place>();
         }
 
         [Key]
         public int Id { get; set; }
-
         [Required]
-        [MaxLength(100)]
-        public string Name { get; set; } = string.Empty;
+        public required string Name { get; set; }
 
         public virtual ICollection<Place> Places { get; set; }
     }

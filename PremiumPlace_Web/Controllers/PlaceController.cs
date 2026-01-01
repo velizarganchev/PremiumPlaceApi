@@ -71,7 +71,6 @@ namespace PremiumPlace_Web.Controllers
                 Details = result.Data.Details,
                 Rate = result.Data.Rate,
                 SquareFeet = result.Data.SquareFeet,
-                Occupancy = result.Data.Occupancy,
                 ImageUrl = result.Data.ImageUrl
             };
             return View(dto);

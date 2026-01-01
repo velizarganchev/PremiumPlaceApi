@@ -137,7 +137,7 @@
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
                                                 <i class="bi bi-people-fill m-1"></i>
-                                                <small class="text-muted">@place.Occupancy Guests</small>
+                                                <small class="text-muted">@place.GuestCapacity Guests</small>
                                             </div>
                                         </div>
                                         <div class="col-6">
@@ -186,7 +186,7 @@
                                 <div class="col-md-3">
                                     <div class="stat-item">
                                         <i class="bi bi-people-fill text-info fs-1 mb-3"></i>
-                                        <h3 class="text-info fw-bold mb-1">@Model.Max(p => p.Occupancy)</h3>
+                                        <h3 class="text-info fw-bold mb-1">@Model.Max(p => p.GuestCapacity)</h3>
                                         <p class="text-muted mb-0">Max Occupancy</p>
                                     </div>
                                 </div>

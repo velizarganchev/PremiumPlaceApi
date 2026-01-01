@@ -19,11 +19,21 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-builder.Services.AddAutoMapper(o =>
+builder.Services.AddAutoMapper(cfg =>
 {
-    o.CreateMap<Place, PlaceCreateDTO>().ReverseMap();
-    o.CreateMap<Place, PlaceUpdateDTO>().ReverseMap();
-    o.CreateMap<Place, PlaceDTO>().ReverseMap();
+    cfg.CreateMap<Place, PlaceCreateDTO>().ReverseMap();
+    cfg.CreateMap<Place, PlaceUpdateDTO>().ReverseMap();
+
+    cfg.CreateMap<PlaceFeatures, PlaceFeaturesDTO>().ReverseMap();
+
+    cfg.CreateMap<Amenity, AmenitieDTO>().ReverseMap();
+    cfg.CreateMap<City, CityDTO>().ReverseMap();
+
+    cfg.CreateMap<Place, PlaceDTO>()
+        .ForMember(d => d.City, opt => opt.MapFrom(s => s.City.Name))
+        .ForMember(d => d.Amenity, opt => opt.MapFrom(s => s.Amenitys.Select(a => a.Name).ToList()))
+        .ForMember(d => d.Features, opt => opt.MapFrom(s => s.Features))
+        .ReverseMap();
 });
 
 // JwtOptions от config
@@ -99,8 +109,9 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var passwordService = scope.ServiceProvider.GetRequiredService<IPasswordService>();
     await db.Database.MigrateAsync();
-    await DbSeeder.SeedAsync(db);
+    await DbSeeder.SeedAsync(db, passwordService);
 }
 
 

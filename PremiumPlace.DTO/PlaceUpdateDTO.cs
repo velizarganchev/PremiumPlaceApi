@@ -5,14 +5,41 @@ namespace PremiumPlace.DTO
     public record class PlaceUpdateDTO
     {
         [Required]
-        public required int Id { get; init; }
-        public required string Name { get; init; } = default!;
+        public int Id { get; init; }
+
+        [Required, MaxLength(200)]
+        public string Name { get; init; } = string.Empty;
+
+        [MaxLength(1000)]
         public string? Details { get; init; }
+
+        [Range(1, 30)]
+        public int GuestCapacity { get; init; }
+
+        [Range(0, 10000)]
         public decimal Rate { get; init; }
+
+        [Range(0, 20)]
+        public int Beds { get; init; }
+
+        [Range(0, 23)]
+        public int CheckInHour { get; init; }
+
+        [Range(0, 23)]
+        public int CheckOutHour { get; init; }
+
+        [Range(10, 10000)]
         public int SquareFeet { get; init; }
-        public int Occupancy { get; init; }
+
+        [MaxLength(500)]
         public string? ImageUrl { get; init; }
-        public List<int> AmenitieIds { get; set; } = [];
+
+        [Required]
+        public int CityId { get; init; }
+
+        public PlaceFeaturesDTO Features { get; init; } = new();
+
+        public List<int>? AmenityIds { get; init; }
 
     }
 }

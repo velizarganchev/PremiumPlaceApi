@@ -4,6 +4,7 @@ namespace PremiumPlace_API.Models
 {
     public class RefreshToken
     {
+        [Key]
         public int Id { get; set; }
 
         [Required]
