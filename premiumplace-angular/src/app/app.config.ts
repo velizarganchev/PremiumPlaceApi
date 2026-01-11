@@ -8,6 +8,7 @@ import { errorInterceptor } from './core/http/error.interceptor';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from './core/auth/auth.service';
 import { refreshInterceptor } from './core/http/refresh.interceptor';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 function initAuth() {
   const auth = inject(AuthService);
@@ -29,6 +30,6 @@ export const appConfig: ApplicationConfig = {
       withFetch(),
       withInterceptors([authInterceptor, refreshInterceptor, errorInterceptor])
     ),
-    { provide: APP_INITIALIZER, multi: true, useFactory: initAuth }
+    { provide: APP_INITIALIZER, multi: true, useFactory: initAuth }, provideAnimationsAsync()
   ]
 };

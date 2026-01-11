@@ -1,1 +1,38 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+/* Palettes (M2) */
+$primary: mat.define-palette(mat.$blue-palette, 700);
+$accent: mat.define-palette(mat.$gray-palette, 900);
+$warn: mat.define-palette(mat.$red-palette);
+
+/* Typography (M2) */
+$typography: mat.define-typography-config($font-family: 'system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif'
+    );
+
+/* Theme (M2) */
+$theme: mat.define-light-theme((color: (primary: $primary,
+                accent: $accent,
+                warn: $warn ),
+            typography: $typography,
+            density: 0));
+
+/* Apply */
+@include mat.all-component-themes($theme);
+
+/* Global black/white surfaces */
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    background: #f7f7f8;
+    color: #111;
+}
+
+a {
+    color: #0b57d0;
+}

@@ -1,11 +1,23 @@
-<h1>Login</h1>
+<mat-card>
+    <h2>Login</h2>
 
-<form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <input placeholder="Email" formControlName="usernameOrEmail" />
-    <input placeholder="Password" type="password" formControlName="password" />
-    <button type="submit" [disabled]="loading()">Login</button>
-</form>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="usernameOrEmail" />
+        </mat-form-field>
 
-@if (error()) {
-<p>{{ error() }}</p>
-}
+        <mat-form-field appearance="outline">
+            <mat-label>Password</mat-label>
+            <input matInput type="password" formControlName="password" />
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" [disabled]="loading()">
+            Login
+        </button>
+    </form>
+
+    @if (error()) {
+    <p>{{ error() }}</p>
+    }
+</mat-card>
