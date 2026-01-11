@@ -1,0 +1,23 @@
+<section class="section">
+    <div class="cards">
+        @for (c of cards(); track c.id) {
+        <mat-card class="card">
+            <div class="card__img" [style.backgroundImage]="'url(' + c.imageUrl + ')'"></div>
+
+            <mat-card-content class="card__content">
+                <h3 class="card__title">{{ c.title }}</h3>
+                <p class="card__subtitle">{{ c.subtitle }}</p>
+
+                @if (c.priceText) { <div class="card__price">{{ c.priceText }}</div> }
+                @if (c.meta) { <div class="card__meta">{{ c.meta }}</div> }
+            </mat-card-content>
+
+            @if (c.href) {
+            <mat-card-actions align="end">
+                <a mat-button [routerLink]="c.href">View</a>
+            </mat-card-actions>
+            }
+        </mat-card>
+        }
+    </div>
+</section>

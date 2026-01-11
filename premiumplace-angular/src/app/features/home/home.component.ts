@@ -2,29 +2,22 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
 
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { HeroComponent } from "./hero/hero.component";
 
-type PromoCard = {
-  title: string;
-  subtitle: string;
-  priceText?: string;
-  meta?: string;
-  imageUrl: string;
-  href?: string; // по-късно ще стане routerLink към detail page
-};
+import { HeroComponent } from "./hero/hero.component";
+import { CardItem } from '../../shared/ui/cards-grid/cards-grid.model';
+import { CardsGridComponent } from "../../shared/ui/cards-grid/cards-grid.component";
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule, HeroComponent],
+  imports: [CommonModule, MatButtonModule, HeroComponent, CardsGridComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {
-  cards: PromoCard[] = [
+  cards: CardItem[] = [
     {
+      id: '1',
       title: 'New Luxury Penthouse',
       subtitle: 'Anaheim, California',
       priceText: '$122 / night',
@@ -32,6 +25,7 @@ export class HomeComponent {
       imageUrl: 'https://images.unsplash.com/photo-1560448204-603b3fc33ddc?auto=format&fit=crop&w=1600&q=80',
     },
     {
+      id: '2',
       title: 'BBQ Patio • Smart TV • 20min Beach',
       subtitle: 'Fountain Valley, California',
       priceText: '$130 / night',
