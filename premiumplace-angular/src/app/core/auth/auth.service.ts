@@ -1,5 +1,5 @@
 import { inject, Injectable, signal, computed } from '@angular/core';
-import { tap } from 'rxjs';
+import { catchError, of, tap } from 'rxjs';
 import { AuthApi } from './auth.api';
 import type { LoginRequest, RegisterRequest, User } from './auth.models';
 
@@ -15,15 +15,16 @@ export class AuthService {
     // Load session from cookies
     loadMe() {
         return this.api.me().pipe(
-            tap({
-                next: (u) => this._user.set(u),
-                error: () => this._user.set(null),
+            tap((u) => this._user.set(u)),
+            catchError(() => {
+                this._user.set(null);
+                return of(null);
             })
         );
     }
 
     login(body: LoginRequest) {
-        // Cookies are set by API; then we fetch /me to hydrate state
+        // Cookies are set by API; then fetch /me to hydrate state
         return this.api.login(body);
     }
 

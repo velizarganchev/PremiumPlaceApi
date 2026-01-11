@@ -21,7 +21,7 @@ export const refreshInterceptor: HttpInterceptorFn = (req, next) => {
         req.url.endsWith('/Auth/register') ||
         req.url.endsWith('/Auth/refresh') ||
         req.url.endsWith('/Auth/logout') ||
-        req.url.endsWith('/Auth/me'); // recommended: treat /me as session check
+        req.url.endsWith('/Auth/me');
 
     const retry = () => defer(() => next(req.clone()));
 

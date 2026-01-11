@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/auth/auth.service';
 import { Router } from '@angular/router';
+import { finalize, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-login-page',
@@ -31,17 +32,18 @@ export class LoginPageComponent {
 
     const dto = this.form.getRawValue();
 
-    this.auth.login(dto).subscribe({
-      next: () => {
-        this.auth.loadMe().subscribe({
-          next: () => this.router.navigateByUrl('/'),
-          error: () => this.router.navigateByUrl('/'),
-        });
+    this.auth.login(dto).pipe(
+      switchMap(() => this.auth.loadMe()),
+      finalize(() => this.loading.set(false))
+    ).subscribe({
+      next: (user) => {
+        if (user) {
+          this.router.navigateByUrl('/places');
+        } else {
+          this.error.set('Unauthorized');
+        }
       },
-      error: (e: any) => {
-        this.error.set(e?.message ?? 'Login failed');
-        this.loading.set(false);
-      }
+      error: (e) => this.error.set(e?.message ?? 'Login failed'),
     });
   }
 }

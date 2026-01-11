@@ -10,8 +10,9 @@ import { AuthService } from './core/auth/auth.service';
 import { refreshInterceptor } from './core/http/refresh.interceptor';
 
 function initAuth() {
+  const auth = inject(AuthService);
+
   return async () => {
-    const auth = inject(AuthService);
     // Do not block app if unauthenticated
     try {
       return await firstValueFrom(auth.loadMe());
