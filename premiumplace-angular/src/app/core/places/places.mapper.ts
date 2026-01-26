@@ -1,7 +1,7 @@
 import { CardItem } from '../../shared/ui/cards-grid/cards-grid.model';
-import type { Place, PlaceDto } from './places.models';
+import type { PlacePreview, PlaceDto } from './places.models';
 
-export const mapPlace = (dto: PlaceDto): Place => ({
+export const mapPlace = (dto: PlaceDto): PlacePreview => ({
     id: dto.id,
     name: dto.name,
     details: dto.details,
@@ -18,7 +18,7 @@ export const amenitiesPreview = (amenity: string[], take = 2) =>
     (amenity ?? []).slice(0, take).join(' • ');
 
 
-export function mapPlaceToCard(place: Place): CardItem {
+export function mapPlaceToCard(place: PlacePreview): CardItem {
     return {
         id: String(place.id),
         title: place.name,
@@ -30,7 +30,7 @@ export function mapPlaceToCard(place: Place): CardItem {
     };
 }
 
-function buildMeta(place: Place): string {
+function buildMeta(place: PlacePreview): string {
     const parts: string[] = [];
 
     parts.push(`${place.guestCapacity} guests`);

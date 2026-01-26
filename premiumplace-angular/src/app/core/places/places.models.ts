@@ -28,7 +28,7 @@ export type PlaceDto = {
     amenity: string[];
 };
 
-export type Place = {
+export type PlacePreview = {
     id: number;
     name: string;
     details: string;

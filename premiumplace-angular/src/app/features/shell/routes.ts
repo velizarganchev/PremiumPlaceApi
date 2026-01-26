@@ -16,7 +16,7 @@ export const SHELL_ROUTES: Routes = [
             {
                 path: 'places',
                 loadChildren: () =>
-                    import('../places/places-page/routes').then(m => m.PLACES_ROUTES),
+                    import('../places/routes').then(m => m.PLACES_ROUTES),
             },
             // Booking (PRIVATE)
             // {

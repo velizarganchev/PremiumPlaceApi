@@ -1,0 +1,145 @@
+@if (place(); as p) {
+<section class="wrap">
+
+    <!-- Top: back -->
+    <div class="topbar">
+        <a mat-button routerLink="/" class="back-btn">
+            <mat-icon>arrow_back</mat-icon>
+            Back to home
+        </a>
+    </div>
+
+    <!-- Title / meta -->
+    <header class="header">
+        <div class="header__left">
+            <h1 class="title">{{ p.name }}</h1>
+            <div class="sub">
+                <span class="location">{{ p.city }}</span>
+
+                <span class="dot">•</span>
+
+                <span class="rating">
+                    <span class="stars">
+                        @for (_ of [].constructor(stars().full); track $index) {
+                        <mat-icon class="star">star</mat-icon>
+                        }
+                        @if (stars().half) {
+                        <mat-icon class="star">star_half</mat-icon>
+                        }
+                        @for (_ of [].constructor(stars().empty); track $index) {
+                        <mat-icon class="star star--empty">star</mat-icon>
+                        }
+                    </span>
+
+                    <span class="rating__text">
+                        {{ review().avg }} ({{ review().count }} reviews)
+                    </span>
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Gallery -->
+    <section class="gallery">
+        <div class="gallery__main">
+            <img [src]="gallery()[0]" alt="" />
+        </div>
+
+        <div class="gallery__side">
+            <img [src]="gallery()[1]" alt="" />
+            <div class="gallery__sideBottom">
+                <img [src]="gallery()[2]" alt="" />
+                <button mat-stroked-button class="show-all" (click)="onShowAllPhotos()">
+                    Show all photos
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Content grid -->
+    <section class="content">
+        <div class="left">
+            <h2 class="sectionTitle">{{ p.name }}</h2>
+
+            <mat-card class="block" appearance="outlined">
+                <mat-card-content>
+                    <h3>Description</h3>
+                    <p class="muted">{{ p.details }}</p>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="block" appearance="outlined">
+                <mat-card-content>
+                    <h3>Highlights</h3>
+
+                    <div class="chips">
+                        <span class="chip">{{ p.guestCapacity }} guests</span>
+                        <span class="chip">{{ p.beds }} beds</span>
+                        <span class="chip">€{{ p.rate }} / night</span>
+                        @if (p.features.internet) { <span class="chip">Wi-Fi</span> }
+                        @if (p.features.airConditioned) { <span class="chip">A/C</span> }
+                        @if (p.features.parking) { <span class="chip">Parking</span> }
+                        @if (p.features.kitchen) { <span class="chip">Kitchen</span> }
+                    </div>
+
+                    <mat-divider class="divider"></mat-divider>
+
+                    <div class="kv">
+                        <div class="kv__row">
+                            <span class="kv__k">Check-in</span>
+                            <span class="kv__v">{{ p.checkInHour }}:00</span>
+                        </div>
+                        <div class="kv__row">
+                            <span class="kv__k">Check-out</span>
+                            <span class="kv__v">{{ p.checkOutHour }}:00</span>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="block" appearance="outlined">
+                <mat-card-content>
+                    <h3>Amenities</h3>
+
+                    <ul class="list">
+                        @for (a of p.amenity; track a) {
+                        <li>{{ a }}</li>
+                        }
+                    </ul>
+                </mat-card-content>
+            </mat-card>
+        </div>
+
+        <!-- Right: booking placeholder -->
+        <aside class="right">
+            <mat-card class="booking" appearance="outlined">
+                <mat-card-content>
+                    <div class="booking__top">
+                        <div class="price">€{{ p.rate }} <span class="muted">/ night</span></div>
+                        <div class="booking__rating">{{ review().avg }} ★</div>
+                    </div>
+
+                    <div class="calendarPlaceholder">
+                        <div class="calendarPlaceholder__title">Add dates</div>
+                        <div class="calendarPlaceholder__box">
+                            Calendar placeholder (DateRangePicker later)
+                        </div>
+                    </div>
+
+                    <button mat-raised-button class="bookBtn" disabled>
+                        Book (later)
+                    </button>
+
+                    <p class="hint muted">
+                        You’ll add date selection + availability check later.
+                    </p>
+                </mat-card-content>
+            </mat-card>
+        </aside>
+    </section>
+</section>
+} @else {
+<section class="wrap">
+    <p class="muted">Loading...</p>
+</section>
+}

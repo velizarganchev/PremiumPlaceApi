@@ -1,5 +1,5 @@
 import { APP_INITIALIZER, ApplicationConfig, inject } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
@@ -25,7 +25,9 @@ function initAuth() {
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes),
+    provideRouter(routes,
+      withInMemoryScrolling({ scrollPositionRestoration: 'top', anchorScrolling: 'enabled' }),
+      withComponentInputBinding()),
     provideHttpClient(
       withFetch(),
       withInterceptors([authInterceptor, refreshInterceptor, errorInterceptor])
