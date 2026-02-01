@@ -1,0 +1,26 @@
+<div class="gallery-overlay" (click)="onOverlayClick($event)">
+    <!-- Close button -->
+    <button mat-icon-button class="close-btn" (click)="close()">
+        <mat-icon>close</mat-icon>
+    </button>
+
+    <!-- Counter -->
+    <div class="counter">
+        {{ currentIndex() + 1 }} / {{ images().length }}
+    </div>
+
+    <!-- Left arrow -->
+    <button mat-icon-button class="nav-btn nav-btn--left" (click)="prev()">
+        <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <!-- Image -->
+    <div class="image-container">
+        <img [src]="currentImage()" alt="Gallery image" />
+    </div>
+
+    <!-- Right arrow -->
+    <button mat-icon-button class="nav-btn nav-btn--right" (click)="next()">
+        <mat-icon>chevron_right</mat-icon>
+    </button>
+</div>

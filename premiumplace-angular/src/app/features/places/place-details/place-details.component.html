@@ -1,3 +1,7 @@
+@if (showGallery()) {
+<app-place-gallery [images]="gallery()" (closed)="onCloseGallery()" />
+}
+
 @if (place(); as p) {
 <section class="wrap">
 

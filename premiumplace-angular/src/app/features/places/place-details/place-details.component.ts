@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 
 import { RouterModule } from '@angular/router';
 
@@ -8,6 +8,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { PlacesService } from '../../../core/places/places.service';
+import { PlaceGalleryComponent } from '../place-gallery/place-gallery.component';
 
 @Component({
   selector: 'app-place-details',
@@ -19,6 +20,7 @@ import { PlacesService } from '../../../core/places/places.service';
     MatCardModule,
     MatIconModule,
     MatDividerModule,
+    PlaceGalleryComponent,
   ],
   templateUrl: './place-details.component.html',
   styleUrl: './place-details.component.scss'
@@ -51,8 +53,13 @@ export class PlaceDetailsComponent {
     return [...base, ...base, ...base].slice(0, 3);
   });
 
+  showGallery = signal(false);
+
   onShowAllPhotos() {
-    // TODO: after: open dialog / full gallery page
-    console.log('Show all photos');
+    this.showGallery.set(true);
+  }
+
+  onCloseGallery() {
+    this.showGallery.set(false);
   }
 }
