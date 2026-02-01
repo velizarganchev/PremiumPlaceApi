@@ -8,7 +8,7 @@ export const mapPlace = (dto: PlaceDto): PlacePreview => ({
     city: dto.city,
     rate: dto.rate,
     imageUrl: dto.imageUrl,
-    amenity: dto.amenity ?? [],
+    amenity: dto.amenitys ?? [],
     features: dto.features,
     guestCapacity: dto.guestCapacity,
     beds: dto.beds,

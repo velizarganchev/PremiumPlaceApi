@@ -26,14 +26,32 @@ builder.Services.AddAutoMapper(cfg =>
 
     cfg.CreateMap<PlaceFeatures, PlaceFeaturesDTO>().ReverseMap();
 
-    cfg.CreateMap<Amenity, AmenitieDTO>().ReverseMap();
+    cfg.CreateMap<Amenity, AmenityDTO>().ReverseMap();
     cfg.CreateMap<City, CityDTO>().ReverseMap();
 
-    cfg.CreateMap<Place, PlaceDTO>()
-        .ForMember(d => d.City, opt => opt.MapFrom(s => s.City.Name))
-        .ForMember(d => d.Amenity, opt => opt.MapFrom(s => s.Amenitys.Select(a => a.Name).ToList()))
-        .ForMember(d => d.Features, opt => opt.MapFrom(s => s.Features))
+    cfg.CreateMap<Review, ReviewDTO>()
+        .ForMember(d => d.Username, opt => opt.MapFrom(r => r.User.Username))
         .ReverseMap();
+
+    cfg.CreateMap<Place, PlaceDTO>()
+        .ForMember(d => d.City, opt => opt.MapFrom(p => p.City.Name))
+        .ForMember(d => d.Amenitys, opt => opt.MapFrom(p => p.Amenitys.Select(a => a.Name).ToList()))
+        .ForMember(d => d.Features, opt => opt.MapFrom(p => p.Features))
+        .ReverseMap();
+
+    cfg.CreateMap<Place, PlaceDetailsDTO>()
+    .ForMember(d => d.City, opt => opt.MapFrom(s => s.City.Name))
+    .ForMember (d => d.Amenitys, opt => opt.MapFrom(s => s.Amenitys.Select(a => a.Name).ToList()))
+    .ForMember(d => d.Reviews, opt => opt.MapFrom(s => s.Reviews))
+    .ForMember(d => d.ReviewSummary, opt => opt.MapFrom(s =>
+        s.Reviews.Any()
+            ? new ReviewSummaryDTO
+            {
+                Count = s.Reviews.Count,
+                Avg = Math.Round(s.Reviews.Average(r => r.Rating), 1)
+            }
+            : new ReviewSummaryDTO { Count = 0, Avg = 0 }
+    ));
 });
 
 // JwtOptions от config

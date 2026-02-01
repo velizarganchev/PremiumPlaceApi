@@ -1,6 +1,6 @@
 ﻿namespace PremiumPlace.DTO
 {
-    public sealed record PlaceDTO
+    public record PlaceDTO
     {
         public int Id { get; init; }
 
@@ -26,6 +26,6 @@
 
         public PlaceFeaturesDTO Features { get; init; } = new();
 
-        public List<string> Amenity { get; init; } = new();
+        public List<string> Amenitys { get; init; } = new();
     }
 }

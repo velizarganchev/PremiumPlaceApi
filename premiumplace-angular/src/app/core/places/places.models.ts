@@ -13,6 +13,20 @@ export type PlaceFeatures = {
 
 
 export type PlaceDto = {
+    reviewSummary: {
+        avg: number;
+        count: number;
+    };
+    reviews: [
+        {
+            id: number;
+            rating: number;
+            comment: string;
+            createdAt: string;
+            userId: number;
+            username: string;
+        },
+    ];
     id: number;
     name: string;
     details: string;
@@ -25,7 +39,7 @@ export type PlaceDto = {
     imageUrl: string;
     city: string;
     features: PlaceFeatures;
-    amenity: string[];
+    amenitys: string[];
 };
 
 export type PlacePreview = {

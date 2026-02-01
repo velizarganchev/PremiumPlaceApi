@@ -18,21 +18,21 @@ namespace PremiumPlace_API.Services.Places
 
         public async Task<ServiceResponse<PlaceDTO>> CreatePlaceAsync(PlaceCreateDTO dto)
         {
-            if (dto is null) return Fail("Place data is required.");
+            if (dto is null) return Fail<PlaceDTO>("Place data is required.");
 
             var name = dto.Name.Trim();
             var existingPlace = await _db.Places.AnyAsync(p => p.Name == name);
-            if (existingPlace) return Fail("Place with the same name already exists.");
+            if (existingPlace) return Fail<PlaceDTO>("Place with the same name already exists.");
 
             var cityExists = await _db.Cities.AnyAsync(c => c.Id == dto.CityId);
-            if (!cityExists) return Fail("Invalid city.");
+            if (!cityExists) return Fail<PlaceDTO>("Invalid city.");
 
             var place = _mapper.Map<Place>(dto);
             place.Name = name;
             place.CreatedAt = DateTime.UtcNow;
 
             var (ok, amenities, error) = await ResolveAmenitiesAsync(dto.AmenityIds);
-            if (!ok) return Fail(error ?? "Invalid amenities.");
+            if (!ok) return Fail<PlaceDTO>(error ?? "Invalid amenities.");
             place.Amenitys = amenities;
 
             await _db.Places.AddAsync(place);
@@ -48,15 +48,15 @@ namespace PremiumPlace_API.Services.Places
 
         public async Task<ServiceResponse<PlaceDTO>> UpdatePlaceAsync(int id, PlaceUpdateDTO dto)
         {
-            if (id <= 0) return Fail("Invalid place ID.");
-            if (dto is null) return Fail("Place data is required.");
-            if (dto.Id != id) return Fail("Place ID mismatch.");
+            if (id <= 0) return Fail<PlaceDTO>("Invalid place ID.");
+            if (dto is null) return Fail<PlaceDTO>("Place data is required.");
+            if (dto.Id != id) return Fail<PlaceDTO>("Place ID mismatch.");
 
             var placeInDb = await _db.Places
                 .Include(p => p.Amenitys)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
-            if (placeInDb is null) return Fail("Place not found.");
+            if (placeInDb is null) return Fail<PlaceDTO>("Place not found.");
 
             var name = dto.Name.Trim();
 
@@ -64,10 +64,10 @@ namespace PremiumPlace_API.Services.Places
                 .AsNoTracking()
                 .AnyAsync(p => p.Name == name && p.Id != id);
 
-            if (duplicate) return Fail("Another place with the same name already exists.");
+            if (duplicate) return Fail<PlaceDTO>("Another place with the same name already exists.");
 
             var cityExists = await _db.Cities.AnyAsync(c => c.Id == dto.CityId);
-            if (!cityExists) return Fail("Invalid city.");
+            if (!cityExists) return Fail<PlaceDTO>("Invalid city.");
 
             _mapper.Map(dto, placeInDb);
             placeInDb.Name = name;
@@ -76,7 +76,7 @@ namespace PremiumPlace_API.Services.Places
             if (dto.AmenityIds is not null)
             {
                 var (ok, amenities, error) = await ResolveAmenitiesAsync(dto.AmenityIds);
-                if (!ok) return Fail(error ?? "Invalid amenities.");
+                if (!ok) return Fail<PlaceDTO>(error ?? "Invalid amenities.");
 
                 placeInDb.Amenitys.Clear();
                 foreach (var a in amenities)
@@ -95,14 +95,14 @@ namespace PremiumPlace_API.Services.Places
 
         public async Task<ServiceResponse<PlaceDTO>> UpdatePlacePartialAsync(int id, PlacePatchUpdateDTO dto)
         {
-            if (id <= 0) return Fail("Invalid place ID.");
-            if (dto is null) return Fail("Place data is required.");
+            if (id <= 0) return Fail<PlaceDTO>("Invalid place ID.");
+            if (dto is null) return Fail<PlaceDTO>("Place data is required.");
 
             var placeInDb = await _db.Places
                 .Include(p => p.Amenitys)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
-            if (placeInDb is null) return Fail("Place not found.");
+            if (placeInDb is null) return Fail<PlaceDTO>("Place not found.");
 
             if (dto.Name is not null)
             {
@@ -112,7 +112,7 @@ namespace PremiumPlace_API.Services.Places
                     .AsNoTracking()
                     .AnyAsync(p => p.Name == name && p.Id != id);
 
-                if (duplicate) return Fail("Another place with the same name already exists.");
+                if (duplicate) return Fail<PlaceDTO>("Another place with the same name already exists.");
 
                 placeInDb.Name = name;
             }
@@ -131,7 +131,7 @@ namespace PremiumPlace_API.Services.Places
             if (dto.CityId.HasValue)
             {
                 var cityExists = await _db.Cities.AnyAsync(c => c.Id == dto.CityId.Value);
-                if (!cityExists) return Fail("Invalid city.");
+                if (!cityExists) return Fail<PlaceDTO>("Invalid city.");
                 placeInDb.CityId = dto.CityId.Value;
             }
 
@@ -155,7 +155,7 @@ namespace PremiumPlace_API.Services.Places
             if (dto.AmenityIds is not null)
             {
                 var (ok, amenities, error) = await ResolveAmenitiesAsync(dto.AmenityIds);
-                if (!ok) return Fail(error ?? "Invalid amenities.");
+                if (!ok) return Fail<PlaceDTO>(error ?? "Invalid amenities.");
 
                 placeInDb.Amenitys.Clear();
                 foreach (var a in amenities)
@@ -192,32 +192,33 @@ namespace PremiumPlace_API.Services.Places
             };
         }
 
-        public async Task<ServiceResponse<PlaceDTO>> GetPlaceByIdAsync(int id)
+        public async Task<ServiceResponse<PlaceDetailsDTO>> GetPlaceByIdAsync(int id)
         {
-            if (id <= 0) return Fail("Invalid place ID.");
+            if (id <= 0) return Fail<PlaceDetailsDTO>("Invalid place ID.");
 
             var placeInDb = await _db.Places
                 .AsNoTracking()
                 .Include(p => p.City)
                 .Include(p => p.Amenitys)
+                .Include(p => p.Reviews).ThenInclude(r => r.User)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
-            if (placeInDb is null) return Fail("Place not found.");
+            if (placeInDb is null) return Fail<PlaceDetailsDTO>("Place not found.");
 
-            return new ServiceResponse<PlaceDTO>
+            return new ServiceResponse<PlaceDetailsDTO>
             {
                 Success = true,
-                Data = _mapper.Map<PlaceDTO>(placeInDb),
+                Data = _mapper.Map<PlaceDetailsDTO>(placeInDb),
                 Message = "Place retrieved successfully."
             };
         }
 
         public async Task<ServiceResponse<PlaceDTO>> DeletePlaceAsync(int id)
         {
-            if (id <= 0) return Fail("Invalid place ID.");
+            if (id <= 0) return Fail<PlaceDTO>("Invalid place ID.");
 
             var place = await _db.Places.FirstOrDefaultAsync(p => p.Id == id);
-            if (place is null) return Fail("Place not found.");
+            if (place is null) return Fail<PlaceDTO>("Place not found.");
 
             _db.Places.Remove(place);
             await _db.SaveChangesAsync();
@@ -250,7 +251,7 @@ namespace PremiumPlace_API.Services.Places
             return (true, amenities, null);
         }
 
-        private static ServiceResponse<PlaceDTO> Fail(string message)
+        private static ServiceResponse<T> Fail<T>(string message)
             => new() { Success = false, Message = message };
     }
 }

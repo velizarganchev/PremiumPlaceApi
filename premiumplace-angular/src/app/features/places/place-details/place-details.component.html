@@ -32,7 +32,7 @@
                     </span>
 
                     <span class="rating__text">
-                        {{ review().avg }} ({{ review().count }} reviews)
+                        {{ p.reviewSummary.avg }} ({{ p.reviewSummary.count }} reviews)
                     </span>
                 </span>
             </div>
@@ -102,7 +102,7 @@
                     <h3>Amenities</h3>
 
                     <ul class="list">
-                        @for (a of p.amenity; track a) {
+                        @for (a of p.amenitys; track a) {
                         <li>{{ a }}</li>
                         }
                     </ul>
@@ -116,7 +116,7 @@
                 <mat-card-content>
                     <div class="booking__top">
                         <div class="price">€{{ p.rate }} <span class="muted">/ night</span></div>
-                        <div class="booking__rating">{{ review().avg }} ★</div>
+                        <div class="booking__rating">{{ p.reviewSummary.avg }} ★</div>
                     </div>
 
                     <div class="calendarPlaceholder">
