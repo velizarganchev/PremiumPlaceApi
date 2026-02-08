@@ -1,0 +1,107 @@
+:host {
+  display: block;
+}
+
+mat-card {
+  border-radius: 16px;
+}
+
+/* ---- Header (price + rating) ---- */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 16px;
+}
+
+.price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111;
+}
+
+.price__unit {
+  font-size: 14px;
+  font-weight: 400;
+  color: #666;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  color: #111;
+}
+
+.rating__star {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+  color: #111;
+}
+
+.rating__count {
+  color: #666;
+}
+
+/* ---- Date inputs ---- */
+
+.date-field {
+  width: 100%;
+}
+
+/* ---- Inline calendar ---- */
+
+.calendar-wrap {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+
+  ::ng-deep .mat-calendar {
+    width: 100%;
+  }
+}
+
+/* ---- Nights summary ---- */
+
+.nights {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 12px;
+}
+
+.nights__total {
+  font-weight: 400;
+  color: #666;
+}
+
+/* ---- Error ---- */
+
+.error {
+  color: #d32f2f;
+  font-size: 13px;
+  margin: 0 0 8px;
+}
+
+/* ---- Book button ---- */
+
+.book-btn {
+  width: 100%;
+  border-radius: 12px;
+  --mdc-filled-button-container-color: #222;
+  --mdc-filled-button-label-text-color: #fff;
+  --mdc-filled-button-disabled-container-color: #e0e0e0;
+  --mdc-filled-button-disabled-label-text-color: #999;
+}
+
+/* ---- Hint ---- */
+
+.hint {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: #666;
+}

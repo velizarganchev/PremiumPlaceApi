@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"C:\\\\Users\\\\User\\\\Desktop\\\\Backend\\\\PremiumPlace\\\\premiumplace-angular\\\\src\\\\app\" /s /b)",
+      "Bash(npx ng build:*)",
+      "Bash(npx ng test:*)"
+    ]
+  }
+}

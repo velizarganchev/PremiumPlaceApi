@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { PlacesService } from '../../../core/places/places.service';
 import { PlaceGalleryComponent } from '../place-gallery/place-gallery.component';
+import { PlaceBookingWidgetComponent } from './place-booking-widget/place-booking-widget.component';
 
 @Component({
   selector: 'app-place-details',
@@ -21,6 +22,7 @@ import { PlaceGalleryComponent } from '../place-gallery/place-gallery.component'
     MatIconModule,
     MatDividerModule,
     PlaceGalleryComponent,
+    PlaceBookingWidgetComponent,
   ],
   templateUrl: './place-details.component.html',
   styleUrl: './place-details.component.scss'

@@ -1,0 +1,74 @@
+<mat-card appearance="outlined">
+  <mat-card-content>
+    <!-- Price + Rating -->
+    <div class="header">
+      <span class="price">
+        {{ currencySymbol() }}{{ rate() }}
+        <span class="price__unit">/ night</span>
+      </span>
+
+      <span class="rating">
+        <mat-icon class="rating__star">star</mat-icon>
+        <span class="rating__avg">{{ reviewAvg() }}</span>
+        <span class="rating__count">({{ reviewCount() }})</span>
+      </span>
+    </div>
+
+    <!-- Date range inputs -->
+    <mat-form-field appearance="outline" class="date-field">
+      <mat-label>Select dates</mat-label>
+      <mat-date-range-input [rangePicker]="picker" [min]="minDate">
+        <input
+          matStartDate
+          [formControl]="form.controls.start"
+          placeholder="Check-in"
+        />
+        <input
+          matEndDate
+          [formControl]="form.controls.end"
+          placeholder="Check-out"
+        />
+      </mat-date-range-input>
+      <!-- Popup picker required by mat-date-range-input (not opened manually) -->
+      <mat-date-range-picker #picker />
+    </mat-form-field>
+
+    <!-- Inline calendar (always visible) -->
+    <div class="calendar-wrap">
+      <mat-calendar
+        [selected]="selectedDateRange()"
+        (selectedChange)="onCalendarDateClicked($event)"
+        [minDate]="minDate"
+      />
+    </div>
+
+    <!-- Nights summary -->
+    @if (nights() > 0) {
+      <div class="nights">
+        {{ nights() }} {{ nights() === 1 ? 'night' : 'nights' }}
+        <span class="nights__total">
+          &middot; {{ currencySymbol() }}{{ totalPrice() }} total
+        </span>
+      </div>
+    }
+
+    <!-- Error text (future: API errors) -->
+    @if (errorText(); as err) {
+      <p class="error">{{ err }}</p>
+    }
+
+    <!-- Book button -->
+    <button
+      mat-flat-button
+      class="book-btn"
+      [disabled]="!canBook()"
+      (click)="onBook()"
+    >
+      Book
+    </button>
+
+    <p class="hint">
+      You'll add date selection + availability check later.
+    </p>
+  </mat-card-content>
+</mat-card>

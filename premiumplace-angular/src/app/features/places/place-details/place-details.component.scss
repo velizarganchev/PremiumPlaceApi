@@ -160,44 +160,6 @@
 .booking {
     position: sticky;
     top: 16px;
-    border-radius: 16px;
-}
-
-.booking__top {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 12px;
-}
-
-.price {
-    font-size: 18px;
-    font-weight: 700;
-}
-
-.calendarPlaceholder__title {
-    font-weight: 650;
-    margin: 10px 0 8px;
-}
-
-.calendarPlaceholder__box {
-    border: 1px dashed #bbb;
-    border-radius: 14px;
-    padding: 16px;
-    color: #666;
-    background: #fafafa;
-    min-height: 120px;
-}
-
-.bookBtn {
-    margin-top: 14px;
-    width: 100%;
-    border-radius: 14px;
-}
-
-.hint {
-    margin: 10px 0 0;
-    font-size: 13px;
 }
 
 @media (max-width: 980px) {
