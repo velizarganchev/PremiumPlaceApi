@@ -15,6 +15,7 @@ namespace PremiumPlace_API.Data
         public DbSet<Review> Reviews { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<Booking> Bookings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -94,6 +95,25 @@ namespace PremiumPlace_API.Data
             modelBuilder.Entity<RefreshToken>()
                 .Property(rt => rt.CreatedAtUtc)
                 .HasDefaultValueSql("GETUTCDATE()");
+
+            modelBuilder.Entity<Booking>(b =>
+            {
+                b.HasKey(x => x.Id);    
+
+                b.HasOne(x => x.Place)
+                 .WithMany()
+                 .HasForeignKey(x => x.PlaceId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+                b.HasOne(x => x.User)
+                 .WithMany()
+                 .HasForeignKey(x => x.UserId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+                b.HasIndex(x => new { x.PlaceId, x.CheckInDate, x.CheckOutDate });
+                b.HasIndex(x => new { x.UserId, x.CreatedAt });
+            });
+
 
             base.OnModelCreating(modelBuilder);
         }
