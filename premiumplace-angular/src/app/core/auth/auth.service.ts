@@ -31,12 +31,16 @@ export class AuthService {
     }
 
     register(body: RegisterRequest) {
-        return this.api.register(body);
+        return this.api.register(body).pipe(
+            switchMap(() => this.loadMe()),
+            map(() => void 0)
+        );
     }
 
     logout() {
         return this.api.logout().pipe(
-            tap(() => this._user.set(null))
+            tap(() => this._user.set(null)),
+            map(() => void 0)
         );
     }
 }
