@@ -1,5 +1,5 @@
 import { inject, Injectable, signal, computed } from '@angular/core';
-import { catchError, of, tap } from 'rxjs';
+import { catchError, map, of, switchMap, tap } from 'rxjs';
 import { AuthApi } from './auth.api';
 import type { LoginRequest, RegisterRequest, User } from './auth.models';
 
@@ -24,8 +24,10 @@ export class AuthService {
     }
 
     login(body: LoginRequest) {
-        // Cookies are set by API; then fetch /me to hydrate state
-        return this.api.login(body);
+        return this.api.login(body).pipe(
+            switchMap(() => this.loadMe()),
+            map(() => void 0)
+        );
     }
 
     register(body: RegisterRequest) {

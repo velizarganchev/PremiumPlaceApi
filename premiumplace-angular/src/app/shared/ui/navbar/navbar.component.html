@@ -1,5 +1,13 @@
 <mat-toolbar class="pp-toolbar">
     <span>PremiumPlace</span>
     <span class="spacer"></span>
-    <button mat-button>Logout</button>
+    @if (isLoggedIn()) {
+    <a mat-button routerLink="/my-bookings">My bookings</a>
+    <a mat-button routerLink="/profile">Profile</a>
+
+    <button mat-button (click)="logout()">Logout</button>
+    } @else {
+    <a mat-button routerLink="/auth/login">Login</a>
+    <a mat-button color="primary" routerLink="/auth/register">Register</a>
+    }
 </mat-toolbar>

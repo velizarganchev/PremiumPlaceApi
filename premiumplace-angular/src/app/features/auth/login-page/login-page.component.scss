@@ -1,19 +1,103 @@
-mat-card {
-    padding-top: 3rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    height: 100vh;
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 64px 16px;
+  min-height: calc(100vh - 64px);
+}
 
-    h2 {
-        font-size: 2.5rem;
-    }
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 32px;
+  border: 1px solid #e6e6e6;
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  background: #fff;
+}
 
-    form {
-        display: flex;
-        flex-direction: column;
-        width: 50vw;
-        max-width: 600px;
+.login-title {
+  margin: 0 0 4px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #111;
+}
+
+.login-subtitle {
+  margin: 0 0 24px;
+  font-size: 14px;
+  color: #666;
+}
+
+/* Error banner */
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: 14px;
+
+  &__icon {
+    font-size: 20px;
+    height: 20px;
+    width: 20px;
+    flex-shrink: 0;
+  }
+}
+
+/* Form fields */
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-field {
+  width: 100%;
+}
+
+/* Submit button */
+.login-btn {
+  width: 100%;
+  margin-top: 8px;
+  border-radius: 12px;
+  height: 48px;
+  font-size: 15px;
+  font-weight: 600;
+  --mdc-filled-button-container-color: #222;
+  --mdc-filled-button-label-text-color: #fff;
+  --mdc-filled-button-disabled-container-color: #e0e0e0;
+  --mdc-filled-button-disabled-label-text-color: #999;
+
+  &__spinner {
+    display: inline-block;
+    margin-right: 8px;
+    vertical-align: middle;
+
+    ::ng-deep circle {
+      stroke: #fff;
     }
+  }
+}
+
+/* Register link */
+.login-register {
+  margin: 20px 0 0;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+
+  a {
+    color: #0b57d0;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
