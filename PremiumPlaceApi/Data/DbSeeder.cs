@@ -56,7 +56,16 @@ namespace PremiumPlace_API.Data
             };
             user.PasswordHash = passwordService.Hash(user, "User");
 
-            db.Users.AddRange(admin, user);
+            var user2 = new User
+            {
+                Username = "demo2",
+                Email = "demo2@premiumplace.local",
+                Role = UserRole.User,
+                CreatedAt = DateTime.UtcNow
+            };
+            user2.PasswordHash = passwordService.Hash(user2, "User");
+
+            db.Users.AddRange(admin, user, user2);
             await db.SaveChangesAsync();
 
             // ---------- Places ----------
@@ -146,7 +155,63 @@ namespace PremiumPlace_API.Data
                 }
             };
 
-            await db.Places.AddRangeAsync(places);
+            db.Places.AddRange(places);
+            await db.SaveChangesAsync();
+
+            // ---------- Bookings (demo data for calendar blocked ranges) ----------
+            var today = DateOnly.FromDateTime(DateTime.UtcNow.Date);
+
+            var bookings = new List<Booking>
+            {
+                // Place A: 2 different users, non-overlapping ranges
+                new Booking
+                {
+                    PlaceId = places[0].Id,
+                    UserId = user.Id,                 // demo
+                    CheckInDate = today.AddDays(3),
+                    CheckOutDate = today.AddDays(6),  // 3 nights (checkout exclusive)
+                    Status = BookingStatus.Confirmed,
+                    CreatedAt = DateTime.UtcNow.AddDays(-10),
+                    PaymentRef = "seed"
+                },
+                new Booking
+                {
+                    PlaceId = places[0].Id,
+                    UserId = user2.Id,                // demo2
+                    CheckInDate = today.AddDays(8),
+                    CheckOutDate = today.AddDays(11), // 3 nights
+                    Status = BookingStatus.Confirmed,
+                    CreatedAt = DateTime.UtcNow.AddDays(-8),
+                    PaymentRef = "seed"
+
+                },
+            
+                // Place B: one longer range
+                new Booking
+                {
+                    PlaceId = places[1].Id,
+                    UserId = user.Id,
+                    CheckInDate = today.AddDays(12),
+                    CheckOutDate = today.AddDays(16), // 4 nights
+                    Status = BookingStatus.Confirmed,
+                    CreatedAt = DateTime.UtcNow.AddDays(-6),
+                    PaymentRef = "seed"
+                },
+            
+                // Place C: cancelled booking should NOT block availability (if your query filters      Confirmed)
+                new Booking
+                {
+                    PlaceId = places[2].Id,
+                    UserId = user2.Id,
+                    CheckInDate = today.AddDays(5),
+                    CheckOutDate = today.AddDays(7),
+                    Status = BookingStatus.Cancelled,
+                    CreatedAt = DateTime.UtcNow.AddDays(-4),
+                    PaymentRef = "seed"
+                },
+            };
+
+            db.Bookings.AddRange(bookings);
             await db.SaveChangesAsync();
 
             // ---------- Reviews ----------

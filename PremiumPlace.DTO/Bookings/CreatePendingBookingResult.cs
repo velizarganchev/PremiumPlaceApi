@@ -1,6 +1,6 @@
 ﻿namespace PremiumPlace.DTO.Bookings
 {
-    public record CreateBookingResult
+    public record CreatePendingBookingResult
     {
         public int BookingId { get; init; }
     }

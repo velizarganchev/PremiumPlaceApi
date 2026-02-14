@@ -30,15 +30,27 @@ namespace PremiumPlace_API.Controllers
             return this.ToActionResult(sr);
         }
 
-        // POST: /api/bookings
+        // POST: /api/bookings/pending  -> creates PENDING booking
         [Authorize]
-        [HttpPost]
-        public async Task<IActionResult> CreateBooking([FromBody] CreateBookingRequest req)
+        [HttpPost("pending")]
+        public async Task<IActionResult> CreatePendingBooking([FromBody] CreateBookingRequest req)
         {
             var userId = GetUserIdOrNull();
             if (userId is null) return Unauthorized();
 
-            var sr = await _bookingService.CreateBookingAsync(userId.Value, req);
+            var sr = await _bookingService.CreatePendingBookingAsync(userId.Value, req);
+            return this.ToActionResult(sr);
+        }
+
+        // POST: /api/bookings/confirm  -> confirms booking after payment verify
+        [Authorize]
+        [HttpPost("confirm")]
+        public async Task<IActionResult> ConfirmBooking([FromBody] ConfirmBookingRequest req)
+        {
+            var userId = GetUserIdOrNull();
+            if (userId is null) return Unauthorized();
+
+            var sr = await _bookingService.ConfirmBookingAsync(userId.Value, req);
             return this.ToActionResult(sr);
         }
 

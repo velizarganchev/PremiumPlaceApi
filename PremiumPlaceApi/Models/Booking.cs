@@ -14,14 +14,19 @@
         public DateOnly CheckInDate { get; set; }
         public DateOnly CheckOutDate { get; set; }
 
-        public BookingStatus Status { get; set; } = BookingStatus.Confirmed;
+        public BookingStatus Status { get; set; } = BookingStatus.Pending;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        // Optional: keep a reference to payment/order for demo flow
+        public string? PaymentRef { get; set; }
     }
 
     public enum BookingStatus
     {
+        Pending = 0,
         Confirmed = 1,
-        Cancelled = 2
+        Cancelled = 2,
+        Failed = 3
     }
 }

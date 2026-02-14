@@ -25,7 +25,6 @@ namespace PremiumPlace_API.Services.Bookings
             var blocked = await _db.Bookings
                 .AsNoTracking()
                 .Where(b => b.PlaceId == placeId && b.Status == BookingStatus.Confirmed)
-                // overlap: existingStart < requestedEnd && existingEnd > requestedStart
                 .Where(b => b.CheckInDate < to && b.CheckOutDate > from)
                 .Select(b => new DateRangeDto
                 {
@@ -42,35 +41,38 @@ namespace PremiumPlace_API.Services.Bookings
             };
         }
 
-        public async Task<ServiceResponse<CreateBookingResult>> CreateBookingAsync(int userId, CreateBookingRequest req)
+        // -----------------------------
+        // 1) Create pending booking
+        // -----------------------------
+        public async Task<ServiceResponse<CreatePendingBookingResult>> CreatePendingBookingAsync(int userId, CreateBookingRequest req)
         {
             if (userId <= 0)
-                return Fail<CreateBookingResult>("Unauthorized.", ServiceErrorType.Unauthorized);
+                return Fail<CreatePendingBookingResult>("Unauthorized.", ServiceErrorType.Unauthorized);
 
             if (req is null)
-                return Fail<CreateBookingResult>("Booking data is required.", ServiceErrorType.Validation);
+                return Fail<CreatePendingBookingResult>("Booking data is required.", ServiceErrorType.Validation);
 
             if (req.PlaceId <= 0)
-                return Fail<CreateBookingResult>("PlaceId is required.", ServiceErrorType.Validation);
+                return Fail<CreatePendingBookingResult>("PlaceId is required.", ServiceErrorType.Validation);
 
             if (req.CheckOutDate <= req.CheckInDate)
-                return Fail<CreateBookingResult>("Check-out must be after check-in.", ServiceErrorType.Validation);
+                return Fail<CreatePendingBookingResult>("Check-out must be after check-in.", ServiceErrorType.Validation);
 
             var nights = req.CheckOutDate.DayNumber - req.CheckInDate.DayNumber;
             if (nights < 1)
-                return Fail<CreateBookingResult>("Minimum stay is 1 night.", ServiceErrorType.Validation);
+                return Fail<CreatePendingBookingResult>("Minimum stay is 1 night.", ServiceErrorType.Validation);
 
             var placeExists = await _db.Places.AsNoTracking().AnyAsync(p => p.Id == req.PlaceId);
             if (!placeExists)
-                return Fail<CreateBookingResult>("Place not found.", ServiceErrorType.NotFound);
+                return Fail<CreatePendingBookingResult>("Place not found.", ServiceErrorType.NotFound);
 
-            // final overlap check (server truth)
+            // overlap check against CONFIRMED only (pending does not block for demo)
             var hasOverlap = await _db.Bookings
                 .Where(b => b.PlaceId == req.PlaceId && b.Status == BookingStatus.Confirmed)
                 .AnyAsync(b => req.CheckInDate < b.CheckOutDate && req.CheckOutDate > b.CheckInDate);
 
             if (hasOverlap)
-                return Fail<CreateBookingResult>("These dates are no longer available.", ServiceErrorType.Conflict);
+                return Fail<CreatePendingBookingResult>("These dates are no longer available.", ServiceErrorType.Conflict);
 
             var booking = new Booking
             {
@@ -78,19 +80,97 @@ namespace PremiumPlace_API.Services.Bookings
                 UserId = userId,
                 CheckInDate = req.CheckInDate,
                 CheckOutDate = req.CheckOutDate,
-                Status = BookingStatus.Confirmed,
+                Status = BookingStatus.Pending,
                 CreatedAt = DateTime.UtcNow
             };
 
             await _db.Bookings.AddAsync(booking);
             await _db.SaveChangesAsync();
 
-            return new ServiceResponse<CreateBookingResult>
+            return new ServiceResponse<CreatePendingBookingResult>
             {
                 Success = true,
-                Data = new CreateBookingResult { BookingId = booking.Id }
-                ,
-                Message = "Booking created successfully."
+                Data = new CreatePendingBookingResult { BookingId = booking.Id },
+                Message = "Pending booking created."
+            };
+        }
+
+        // -----------------------------
+        // 2) Confirm pending booking
+        // (demo flow: backend verifies paymentRef via external call later)
+        // -----------------------------
+        public async Task<ServiceResponse<ConfirmBookingResult>> ConfirmBookingAsync(int userId, ConfirmBookingRequest req)
+        {
+            if (userId <= 0)
+                return Fail<ConfirmBookingResult>("Unauthorized.", ServiceErrorType.Unauthorized);
+
+            if (req is null)
+                return Fail<ConfirmBookingResult>("Confirm data is required.", ServiceErrorType.Validation);
+
+            if (req.BookingId <= 0)
+                return Fail<ConfirmBookingResult>("Invalid booking ID.", ServiceErrorType.Validation);
+
+            if (string.IsNullOrWhiteSpace(req.PaymentReference))
+                return Fail<ConfirmBookingResult>("Payment reference is required.", ServiceErrorType.Validation);
+
+            var booking = await _db.Bookings
+                .FirstOrDefaultAsync(b => b.Id == req.BookingId && b.UserId == userId);
+
+            if (booking is null)
+                return Fail<ConfirmBookingResult>("Booking not found.", ServiceErrorType.NotFound);
+
+            if (booking.Status == BookingStatus.Cancelled)
+                return Fail<ConfirmBookingResult>("Booking is cancelled.", ServiceErrorType.Conflict);
+
+            if (booking.Status == BookingStatus.Confirmed)
+            {
+                return new ServiceResponse<ConfirmBookingResult>
+                {
+                    Success = true,
+                    Data = new ConfirmBookingResult { BookingId = booking.Id, Status = BookingStatus.Confirmed.ToString() },
+                    Message = "Booking already confirmed."
+                };
+            }
+
+            if (booking.Status != BookingStatus.Pending)
+                return Fail<ConfirmBookingResult>($"Booking cannot be confirmed from status '{booking.Status}'.", ServiceErrorType.Conflict);
+
+            // Final overlap check (server truth) - protects against race conditions
+            var hasOverlap = await _db.Bookings
+                .Where(b => b.PlaceId == booking.PlaceId && b.Status == BookingStatus.Confirmed)
+                .AnyAsync(b => booking.CheckInDate < b.CheckOutDate && booking.CheckOutDate > b.CheckInDate);
+
+            if (hasOverlap)
+            {
+                booking.Status = BookingStatus.Failed;
+                booking.PaymentRef = req.PaymentReference;
+                await _db.SaveChangesAsync();
+
+                return Fail<ConfirmBookingResult>("Dates became unavailable before confirmation.", ServiceErrorType.Conflict);
+            }
+
+            // TODO: Replace with real PayPal verify/capture:
+            // - call PayPal API with PaymentReference (orderId/token)
+            // - ensure PAID/CAPTURED and amount matches expected
+            var verifyOk = await VerifyPaymentOrFailAsync(req.PaymentReference);
+            if (!verifyOk)
+            {
+                booking.Status = BookingStatus.Failed;
+                booking.PaymentRef = req.PaymentReference;
+                await _db.SaveChangesAsync();
+
+                return Fail<ConfirmBookingResult>("Payment verification failed.", ServiceErrorType.Conflict);
+            }
+
+            booking.Status = BookingStatus.Confirmed;
+            booking.PaymentRef = req.PaymentReference;
+            await _db.SaveChangesAsync();
+
+            return new ServiceResponse<ConfirmBookingResult>
+            {
+                Success = true,
+                Data = new ConfirmBookingResult { BookingId = booking.Id, Status = BookingStatus.Confirmed.ToString() },
+                Message = "Booking confirmed."
             };
         }
 
@@ -138,6 +218,7 @@ namespace PremiumPlace_API.Services.Bookings
             if (booking.Status == BookingStatus.Cancelled)
                 return new ServiceResponse<object> { Success = true, Message = "Booking already cancelled." };
 
+            // allow cancelling Pending & Confirmed for demo
             booking.Status = BookingStatus.Cancelled;
             await _db.SaveChangesAsync();
 
@@ -148,7 +229,19 @@ namespace PremiumPlace_API.Services.Bookings
             };
         }
 
+        // -----------------------------
+        // Helpers
+        // -----------------------------
         private static ServiceResponse<T> Fail<T>(string message, ServiceErrorType type)
             => new() { Success = false, Message = message, ErrorType = type };
+
+        private static Task<bool> VerifyPaymentOrFailAsync(string paymentReference)
+        {
+            // DEMO stub:
+            // - return true when you pass something that looks legit
+            // Later: move this to Checkout/PayPal service.
+            var ok = !string.IsNullOrWhiteSpace(paymentReference);
+            return Task.FromResult(ok);
+        }
     }
 }

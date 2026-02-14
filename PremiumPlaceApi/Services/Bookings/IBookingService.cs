@@ -6,7 +6,9 @@ namespace PremiumPlace_API.Services.Bookings
     {
         Task<ServiceResponse<AvailabilityResponse>> GetAvailabilityAsync(int placeId, DateOnly from, DateOnly to);
 
-        Task<ServiceResponse<CreateBookingResult>> CreateBookingAsync(int userId, CreateBookingRequest req);
+        Task<ServiceResponse<CreatePendingBookingResult>> CreatePendingBookingAsync(int userId, CreateBookingRequest req);
+
+        Task<ServiceResponse<ConfirmBookingResult>> ConfirmBookingAsync(int userId, ConfirmBookingRequest req);
 
         Task<ServiceResponse<List<MyBookingDTO>>> GetMyBookingsAsync(int userId);
 

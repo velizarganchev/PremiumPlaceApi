@@ -127,7 +127,7 @@ public class BookingServiceTests : IDisposable
             CheckOutDate = new DateOnly(2026, 3, 5)
         };
 
-        var result = await svc.CreateBookingAsync(User1Id, req);
+        var result = await svc.CreatePendingBookingAsync(User1Id, req);
 
         Assert.False(result.Success);
         Assert.Equal(ServiceErrorType.Validation, result.ErrorType);
@@ -147,7 +147,7 @@ public class BookingServiceTests : IDisposable
             CheckOutDate = new DateOnly(2026, 4, 5)
         };
 
-        var result = await svc.CreateBookingAsync(User1Id, req);
+        var result = await svc.CreatePendingBookingAsync(User1Id, req);
 
         Assert.True(result.Success);
         Assert.NotNull(result.Data);
@@ -156,7 +156,7 @@ public class BookingServiceTests : IDisposable
         // Verify persisted
         var booking = await db.Bookings.FindAsync(result.Data.BookingId);
         Assert.NotNull(booking);
-        Assert.Equal(BookingStatus.Confirmed, booking.Status);
+        Assert.Equal(BookingStatus.Pending, booking.Status);
     }
 
     // ───────────────────────── F ─────────────────────────
@@ -187,7 +187,7 @@ public class BookingServiceTests : IDisposable
             CheckOutDate = new DateOnly(2026, 2, 11)
         };
 
-        var result = await svc.CreateBookingAsync(User1Id, req);
+        var result = await svc.CreatePendingBookingAsync(User1Id, req);
 
         Assert.False(result.Success);
         Assert.Equal(ServiceErrorType.Conflict, result.ErrorType);
@@ -221,7 +221,7 @@ public class BookingServiceTests : IDisposable
             CheckOutDate = new DateOnly(2026, 2, 12)
         };
 
-        var result = await svc.CreateBookingAsync(User1Id, req);
+        var result = await svc.CreatePendingBookingAsync(User1Id, req);
 
         Assert.True(result.Success);
         Assert.NotNull(result.Data);
