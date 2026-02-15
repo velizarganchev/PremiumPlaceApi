@@ -110,7 +110,10 @@ namespace PremiumPlace_API.Data
                  .HasForeignKey(x => x.UserId)
                  .OnDelete(DeleteBehavior.Restrict);
 
-                b.HasIndex(x => new { x.PlaceId, x.CheckInDate, x.CheckOutDate });
+                b.Property(x => x.TotalAmount).HasPrecision(10, 2).IsRequired();
+                b.Property(x => x.CurrencyCode).HasMaxLength(3).IsRequired();
+
+                b.HasIndex(x => new { x.PlaceId, x.Status, x.CheckInDate, x.CheckOutDate });
                 b.HasIndex(x => new { x.UserId, x.CreatedAt });
             });
 

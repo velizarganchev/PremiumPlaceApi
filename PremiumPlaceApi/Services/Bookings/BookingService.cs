@@ -1,17 +1,24 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PremiumPlace.DTO.Bookings;
 using PremiumPlace_API.Data;
+using PremiumPlace_API.Infrastructure.Payments.PayPal;
 using PremiumPlace_API.Models;
+using PremiumPlace_API.Services.PayPal;
 
 namespace PremiumPlace_API.Services.Bookings
 {
     public class BookingService : IBookingService
     {
         private readonly ApplicationDbContext _db;
+        private readonly IPayPalPaymentVerifier _payPalVerifier;
+        private readonly PayPalOptions _payPalOptions;
 
-        public BookingService(ApplicationDbContext db)
+        public BookingService(ApplicationDbContext db, IPayPalPaymentVerifier payPalVerifier,
+        Microsoft.Extensions.Options.IOptions<PayPalOptions> payPalOptions)
         {
             _db = db;
+            _payPalVerifier = payPalVerifier;
+            _payPalOptions = payPalOptions.Value;
         }
 
         public async Task<ServiceResponse<AvailabilityResponse>> GetAvailabilityAsync(int placeId, DateOnly from, DateOnly to)
@@ -62,17 +69,22 @@ namespace PremiumPlace_API.Services.Bookings
             if (nights < 1)
                 return Fail<CreatePendingBookingResult>("Minimum stay is 1 night.", ServiceErrorType.Validation);
 
-            var placeExists = await _db.Places.AsNoTracking().AnyAsync(p => p.Id == req.PlaceId);
-            if (!placeExists)
+            var place = await _db.Places.AsNoTracking().Select(p => new { p.Id, p.Name, p.Rate }).FirstOrDefaultAsync(p => p.Id == req.PlaceId);
+
+            if (place is null)
                 return Fail<CreatePendingBookingResult>("Place not found.", ServiceErrorType.NotFound);
 
-            // overlap check against CONFIRMED only (pending does not block for demo)
+            // overlap check against CONFIRMED only
             var hasOverlap = await _db.Bookings
                 .Where(b => b.PlaceId == req.PlaceId && b.Status == BookingStatus.Confirmed)
                 .AnyAsync(b => req.CheckInDate < b.CheckOutDate && req.CheckOutDate > b.CheckInDate);
 
             if (hasOverlap)
                 return Fail<CreatePendingBookingResult>("These dates are no longer available.", ServiceErrorType.Conflict);
+
+            // expected total amount calculated server-side
+            var total = decimal.Round(place.Rate * nights, 2); // server truth
+            var currency = string.IsNullOrWhiteSpace(_payPalOptions.ExpectedCurrency) ? "EUR" : _payPalOptions.ExpectedCurrency!;
 
             var booking = new Booking
             {
@@ -81,7 +93,10 @@ namespace PremiumPlace_API.Services.Bookings
                 CheckInDate = req.CheckInDate,
                 CheckOutDate = req.CheckOutDate,
                 Status = BookingStatus.Pending,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+
+                TotalAmount = total,
+                CurrencyCode = currency
             };
 
             await _db.Bookings.AddAsync(booking);
@@ -149,17 +164,23 @@ namespace PremiumPlace_API.Services.Bookings
                 return Fail<ConfirmBookingResult>("Dates became unavailable before confirmation.", ServiceErrorType.Conflict);
             }
 
-            // TODO: Replace with real PayPal verify/capture:
-            // - call PayPal API with PaymentReference (orderId/token)
-            // - ensure PAID/CAPTURED and amount matches expected
-            var verifyOk = await VerifyPaymentOrFailAsync(req.PaymentReference);
-            if (!verifyOk)
+            var idempotencyKey = $"pp-booking-{booking.Id}-{req.PaymentReference}".Replace(" ", "");
+
+            try
+            {
+                await _payPalVerifier.VerifyOrThrowAsync(
+                    payPalOrderId: req.PaymentReference,
+                    expectedAmount: booking.TotalAmount,
+                    expectedCurrency: booking.CurrencyCode,
+                    idempotencyKey: idempotencyKey);
+            }
+            catch (Exception ex)
             {
                 booking.Status = BookingStatus.Failed;
                 booking.PaymentRef = req.PaymentReference;
                 await _db.SaveChangesAsync();
 
-                return Fail<ConfirmBookingResult>("Payment verification failed.", ServiceErrorType.Conflict);
+                return Fail<ConfirmBookingResult>($"Payment verification failed: {ex.Message}", ServiceErrorType.Conflict);
             }
 
             booking.Status = BookingStatus.Confirmed;
@@ -191,7 +212,9 @@ namespace PremiumPlace_API.Services.Bookings
                     CheckInDate = b.CheckInDate,
                     CheckOutDate = b.CheckOutDate,
                     Status = b.Status.ToString(),
-                    CreatedAt = b.CreatedAt
+                    CreatedAt = b.CreatedAt,
+                    TotalAmount = b.TotalAmount,
+                    CurrencyCode = b.CurrencyCode
                 })
                 .ToListAsync();
 
@@ -234,14 +257,5 @@ namespace PremiumPlace_API.Services.Bookings
         // -----------------------------
         private static ServiceResponse<T> Fail<T>(string message, ServiceErrorType type)
             => new() { Success = false, Message = message, ErrorType = type };
-
-        private static Task<bool> VerifyPaymentOrFailAsync(string paymentReference)
-        {
-            // DEMO stub:
-            // - return true when you pass something that looks legit
-            // Later: move this to Checkout/PayPal service.
-            var ok = !string.IsNullOrWhiteSpace(paymentReference);
-            return Task.FromResult(ok);
-        }
     }
 }

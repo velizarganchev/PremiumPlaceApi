@@ -18,6 +18,9 @@
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        public decimal TotalAmount { get; set; }   // expected total for PayPal validation
+        public string CurrencyCode { get; set; } = "EUR"; // ISO currency, e.g. "EUR"
+
         // Optional: keep a reference to payment/order for demo flow
         public string? PaymentRef { get; set; }
     }

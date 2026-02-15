@@ -9,5 +9,7 @@
         public DateOnly CheckOutDate { get; init; }
         public string Status { get; init; } = "";
         public DateTime CreatedAt { get; init; }
+        public decimal TotalAmount { get; init; }
+        public string CurrencyCode { get; init; } = "EUR";
     }
 }

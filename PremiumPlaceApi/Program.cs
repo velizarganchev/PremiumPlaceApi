@@ -3,14 +3,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PremiumPlace.DTO;
 using PremiumPlace_API.Data;
+using PremiumPlace_API.Infrastructure.Payments.PayPal;
 using PremiumPlace_API.Models;
 using PremiumPlace_API.Services.Auth;
 using PremiumPlace_API.Services.Bookings;
+using PremiumPlace_API.Services.PayPal;
 using PremiumPlace_API.Services.Places;
 using Scalar.AspNetCore;
+using System.Net.Http.Headers;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddMemoryCache();
 
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -118,11 +123,28 @@ builder.Services.AddCors(options =>
 });
 
 
+builder.Services.Configure<PayPalOptions>(builder.Configuration.GetSection("PayPal"));
+
+// Named HttpClient за PayPal
+builder.Services.AddHttpClient(PayPalHttpClient.HttpClientName, (sp, client) =>
+{
+    var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<PayPalOptions>>().Value;
+    client.BaseAddress = options.BaseUri;
+    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("PremiumPlaceAPI/1.0");
+})
+.ConfigureHttpClient(c => c.Timeout = TimeSpan.FromSeconds(30));
+
+
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPlaceService, PlaceService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
+
+builder.Services.AddScoped<IPayPalAuthClient, PayPalAuthClient>();
+builder.Services.AddScoped<IPayPalOrdersClient, PayPalOrdersClient>();
+builder.Services.AddScoped<IPayPalPaymentVerifier, PayPalPaymentVerifier>();
 
 
 var app = builder.Build();

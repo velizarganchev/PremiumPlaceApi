@@ -161,58 +161,79 @@ namespace PremiumPlace_API.Data
             // ---------- Bookings (demo data for calendar blocked ranges) ----------
             var today = DateOnly.FromDateTime(DateTime.UtcNow.Date);
 
+            static decimal CalcTotal(decimal rate, DateOnly checkIn, DateOnly checkOut)
+            {
+                var nights = checkOut.DayNumber - checkIn.DayNumber;
+                return decimal.Round(rate * nights, 2);
+            }
+
+            var b1In = today.AddDays(3);
+            var b1Out = today.AddDays(6);
+
+            var b2In = today.AddDays(8);
+            var b2Out = today.AddDays(11);
+
+            var b3In = today.AddDays(12);
+            var b3Out = today.AddDays(16);
+
+            var b4In = today.AddDays(5);
+            var b4Out = today.AddDays(7);
+
             var bookings = new List<Booking>
             {
-                // Place A: 2 different users, non-overlapping ranges
-                new Booking
-                {
+                new() {
                     PlaceId = places[0].Id,
-                    UserId = user.Id,                 // demo
-                    CheckInDate = today.AddDays(3),
-                    CheckOutDate = today.AddDays(6),  // 3 nights (checkout exclusive)
+                    UserId = user.Id,
+                    CheckInDate = b1In,
+                    CheckOutDate = b1Out,
                     Status = BookingStatus.Confirmed,
                     CreatedAt = DateTime.UtcNow.AddDays(-10),
-                    PaymentRef = "seed"
+                    PaymentRef = "seed",
+            
+                    CurrencyCode = "EUR",
+                    TotalAmount = CalcTotal(places[0].Rate, b1In, b1Out)
                 },
-                new Booking
-                {
+                new() {
                     PlaceId = places[0].Id,
-                    UserId = user2.Id,                // demo2
-                    CheckInDate = today.AddDays(8),
-                    CheckOutDate = today.AddDays(11), // 3 nights
+                    UserId = user2.Id,
+                    CheckInDate = b2In,
+                    CheckOutDate = b2Out,
                     Status = BookingStatus.Confirmed,
                     CreatedAt = DateTime.UtcNow.AddDays(-8),
-                    PaymentRef = "seed"
-
-                },
+                    PaymentRef = "seed",
             
-                // Place B: one longer range
-                new Booking
-                {
+                    CurrencyCode = "EUR",
+                    TotalAmount = CalcTotal(places[0].Rate, b2In, b2Out)
+                },
+                new() {
                     PlaceId = places[1].Id,
                     UserId = user.Id,
-                    CheckInDate = today.AddDays(12),
-                    CheckOutDate = today.AddDays(16), // 4 nights
+                    CheckInDate = b3In,
+                    CheckOutDate = b3Out,
                     Status = BookingStatus.Confirmed,
                     CreatedAt = DateTime.UtcNow.AddDays(-6),
-                    PaymentRef = "seed"
-                },
+                    PaymentRef = "seed",
             
-                // Place C: cancelled booking should NOT block availability (if your query filters      Confirmed)
-                new Booking
-                {
+                    CurrencyCode = "EUR",
+                    TotalAmount = CalcTotal(places[1].Rate, b3In, b3Out)
+                },
+                new() {
                     PlaceId = places[2].Id,
                     UserId = user2.Id,
-                    CheckInDate = today.AddDays(5),
-                    CheckOutDate = today.AddDays(7),
+                    CheckInDate = b4In,
+                    CheckOutDate = b4Out,
                     Status = BookingStatus.Cancelled,
                     CreatedAt = DateTime.UtcNow.AddDays(-4),
-                    PaymentRef = "seed"
+                    PaymentRef = "seed",
+            
+                    CurrencyCode = "EUR",
+                    TotalAmount = CalcTotal(places[2].Rate, b4In, b4Out)
                 },
             };
 
             db.Bookings.AddRange(bookings);
             await db.SaveChangesAsync();
+
 
             // ---------- Reviews ----------
             // Unique index (PlaceId, UserId) => one review per user per place.
